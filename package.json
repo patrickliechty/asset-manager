@@ -1,4 +1,4 @@
-{
+{ 
   "name": "asset-manager",
   "description": "Asset manager built on top of connect-asset for managing multiple asset folders.",
   "version": "0.3.5",
