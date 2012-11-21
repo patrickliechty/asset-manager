@@ -29,7 +29,7 @@ buster.testCase("Asset Manager", {
     "in development mode": {
       setUp: function(done) {
         this.am.start({
-          paths: ['test/app3', 'test/app5', 'test/app1'],
+          paths: ['test/app3', 'test/app5'],
           context: this.context
         }, function(){
           done();
@@ -136,6 +136,7 @@ buster.testCase("Asset Manager", {
       
       "check css resolution": function(){
         assert.equals("<link href='/css/app3-fcdce6b6d6e2175f6406869882f6f1ce.css' rel='stylesheet' media='screen'>", this.context.css("app3.css"));
+        assert.equals("<link href='/css/fullModuleWithCSS-fcdce6b6d6e2175f6406869882f6f1ce.css' rel='stylesheet' media='screen'>", this.context.css('fullModuleWithCSS.css'));
         assert.equals("<link href='/css/app3-fcdce6b6d6e2175f6406869882f6f1ce.css' rel='stylesheet' media='print'>", this.context.css({print : 'app3.css'}));
       },
       
@@ -191,12 +192,13 @@ buster.testCase("Asset Manager", {
         assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-cb248e942f61a08ff6f783b491bcfa4e.js")));
         assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-cb248e942f61a08ff6f783b491bcfa4e_raw.js")));
         
-        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-d3529e0d07df9ffe620d9b54850143a7.js")));
-        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-d3529e0d07df9ffe620d9b54850143a7_raw.js")));
+        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-a5de11c0479501aa7e61df16939ba46d.js")));
+        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-a5de11c0479501aa7e61df16939ba46d_raw.js")));
         
         assert.equals(true, fs.existsSync(path.join(tmpDir, "manifest.json")));
         
         assert.equals(true, fs.existsSync(path.join(tmpDir, "css", "app3-fcdce6b6d6e2175f6406869882f6f1ce.css")));
+        assert.equals(true, fs.existsSync(path.join(tmpDir, "css", "fullModuleWithCSS-fcdce6b6d6e2175f6406869882f6f1ce.css")));
         assert.equals(true, fs.existsSync(path.join(tmpDir, "img", "arrow3-dd0ecf27272f0daade43058090491241.png")));
         
         var manifest = fs.readFileSync(path.join(tmpDir, "manifest.json"), 'utf8');
