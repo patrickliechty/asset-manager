@@ -29,7 +29,7 @@ buster.testCase("Asset Manager", {
     "in development mode": {
       setUp: function(done) {
         this.am.start({
-          paths: ['test/app3', 'test/app5'],
+          paths: ['test/app3', 'test/app5', 'test/app1'],
           context: this.context
         }, function(){
           done();
@@ -50,6 +50,7 @@ buster.testCase("Asset Manager", {
       "check css resolution": function(){
         assert.equals("<link href='/css/app3.css' rel='stylesheet' media='screen'>", this.context.css("app3.css"));
         assert.equals("<link href='/css/app3.css' rel='stylesheet' media='print'>", this.context.css({print : 'app3.css'}));
+        assert.equals("<link href='/css/fullModuleWithCSS.css' rel='stylesheet' media='screen'>", this.context.css('fullModuleWithCSS.css'));
         assert.equals("<link href='mynonexistentfile.css' rel='stylesheet' media='screen'>", this.context.css("mynonexistentfile.css"));
       },
       
