@@ -192,8 +192,8 @@ buster.testCase("Asset Manager", {
         assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-cb248e942f61a08ff6f783b491bcfa4e.js")));
         assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-cb248e942f61a08ff6f783b491bcfa4e_raw.js")));
         
-        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-a5de11c0479501aa7e61df16939ba46d.js")));
-        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-a5de11c0479501aa7e61df16939ba46d_raw.js")));
+        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-0fb46b1440aed4471c1f5706e93c8f48.js")));
+        assert.equals(true, path.existsSync(path.join(tmpDir, "js", "clientManifest-0fb46b1440aed4471c1f5706e93c8f48_raw.js")));
         
         assert.equals(true, fs.existsSync(path.join(tmpDir, "manifest.json")));
         
@@ -247,37 +247,6 @@ buster.testCase("Asset Manager", {
         refute.equals(-1, contents.indexOf('CDNPath/img/arrow2-dd0ecf27272f0daade43058090491241.png'));
         refute.equals(-1, contents.indexOf("url('missingImage.png')"));
         
-        done();
-      });
-    },
-    
-    "//other languages that all fallback to english": function(done) {
-      var tmpDir = this.tmpDir;
-      this.am.precompile({
-        paths: ['test/app3'],
-        servePath: "CDNPath",
-        builtAssets: tmpDir,
-        locales: ["en", "es", "zh", "fr"]
-      }, function(){
-        assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-29b858db32acb754b5a863b899c58d4d.js")), "english file doesn't exist");
-        assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-29b858db32acb754b5a863b899c58d4d_es.js")), "spanish file doesn't exist");
-        assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-29b858db32acb754b5a863b899c58d4d_zh.js")), "chinese file doesn't exist");
-        assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "app3-29b858db32acb754b5a863b899c58d4d_fr.js")), "french file doesn't exist");
-        
-        done();
-      });
-    },
-    
-    "//other languages that have other translations": function(done) {
-      var tmpDir = this.tmpDir;
-      this.am.precompile({
-        paths: ['test/app1'],
-        servePath: "CDNPath",
-        builtAssets: this.tmpDir,
-        locales: ["en", "es"]
-      }, function(){
-        assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "fullModule-29b858db32acb754b5a863b899c58d4d.js")));
-        assert.equals(true, fs.existsSync(path.join(tmpDir, "js", "fullModule-29b858db32acb754b5a863b899c58d4d_es.js")));
         done();
       });
     }
