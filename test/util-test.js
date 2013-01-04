@@ -78,6 +78,33 @@ buster.testCase("Utils tests", {
     }
   },
   
+  "Test readLocaleFiles": {
+    "locales in control folder": function() {
+      var baseLocalePath = 'test/app1/js/fullModule/locales',
+          langs = this.utils.readLocaleFiles(baseLocalePath, "fullModule");
+      
+      assert(langs != null && typeof(langs) == 'object');
+      assert.defined(langs.en);
+      assert.same(langs.en.title, 'value');
+      assert.same(langs.en.full, 'more');
+      assert.defined(langs.es);
+      assert.same(langs.es.title, 'espanol');
+      
+    },
+    "locales in main locale folder": function() {
+      var baseLocalePath = 'test/locales',
+          langs = this.utils.readLocaleFiles(baseLocalePath, "fullModuleWithCSS");
+      
+      assert(langs != null && typeof(langs) == 'object');
+      assert.defined(langs.en);
+      assert.same(langs.en.title, 'value');
+      refute.same(langs.en.full, 'more');
+      refute.same(langs.en.fromNoMatch, 'value');
+      assert.defined(langs.es);
+      assert.same(langs.es.title, 'espanol');
+    }
+  },
+  
   "Test extractMediaMeta": {
     "plain path": function() {
       var meta = this.utils.extractMediaMeta("mypath");
