@@ -36,6 +36,11 @@ static assets into the markup need to resolve these assets in your page. For ins
     <%- js('jquery') %>
     <%- img('icon') %>
 
+### Supported CSS Precompilers
+`asset-manager` has built in support for the following CSS preprocessors:
+* Less
+* Stylus
+
 ### Express Middleware
 
 If you want to have your app serve the static assets as well (a likely case at dev time), you can use the provided
