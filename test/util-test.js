@@ -1,14 +1,14 @@
-var buster = require("buster"),
+var assert = require("chai").assert,
     fs = require('fs'),
     path = require('path');
 
-buster.testCase("Utils tests", {
-  setUp: function(){
+describe("Utils tests", function(){
+  before(function(){
     this.utils = require('../lib/utils');
-  },
+  });
   
-  "Test extend": {
-    setUp : function() {
+  describe("Test extend", function(){
+    before(function() {
       this.obj1 = {
         name : "value",
         name1 : "value1"
@@ -18,274 +18,274 @@ buster.testCase("Utils tests", {
         name : "valueNew",
         name2 : "value2"
       }
-    },
+    });
     
-    "extend two objects": function() {
+    it("extend two objects", function() {
       var merged = this.utils.extend(this.obj1, this.obj2);
       
-      assert.equals(this.obj2.name, merged.name);
-      assert.equals(this.obj1.name1, merged.name1);
-      assert.equals(this.obj2.name2, merged.name2);
-    },
+      assert.equal(this.obj2.name, merged.name);
+      assert.equal(this.obj1.name1, merged.name1);
+      assert.equal(this.obj2.name2, merged.name2);
+    });
     
-    "extend an empty object": function() {
+    it("extend an empty object", function() {
       var merged = this.utils.extend({}, this.obj2);
       
-      assert.equals(this.obj2.name, merged.name);
-      assert.equals(this.obj2.name2, merged.name2);
-      refute.same(merged, this.obj2);
-    },
+      assert.equal(this.obj2.name, merged.name);
+      assert.equal(this.obj2.name2, merged.name2);
+      assert.notEqual(merged, this.obj2);
+    });
     
-    "extend an with an empty object": function() {
+    it("extend an with an empty object", function() {
       var merged = this.utils.extend(this.obj2, {});
       
-      assert.equals(this.obj2.name, merged.name);
-      assert.equals(this.obj2.name2, merged.name2);
-      refute.same(merged, this.obj2);
-    }
-  },
+      assert.equal(this.obj2.name, merged.name);
+      assert.equal(this.obj2.name2, merged.name2);
+      assert.notEqual(merged, this.obj2);
+    });
+  });
 
-  "Test filterAssembliesFiles": {
-    "simple set": function() {
+  describe("Test filterAssembliesFiles", function(){
+    it("simple set", function() {
       var allFiles = ['file1.txt', 'file2.txt', 'module/file3.txt', 'module/file4.txt'],
           assemblyFolders = ['module'],
           filtered = this.utils.filterAssembliesFiles(allFiles, assemblyFolders);
       
-      assert.same(3, filtered.length);
-    },
-    "name overlap": function() {
+      assert.equal(3, filtered.length);
+    });
+    it("name overlap", function() {
       var allFiles = ['longFileName.txt', 'file2.txt', 'longFile/file3.txt', 'longFile/file4.txt'],
           assemblyFolders = ['longFile'],
           filtered = this.utils.filterAssembliesFiles(allFiles, assemblyFolders);
       
-      assert.same(3, filtered.length);
-    }
-  },
+      assert.equal(3, filtered.length);
+    });
+  });
 
-  "Test findModuleCSSFiles": {
-    "simple set": function() {
+  describe("Test findModuleCSSFiles", function(){
+    it("simple set", function() {
       var allFiles = ['test/app1/js/fullModule', 'test/app3/js/fullModuleWithCSS'],
           cssFiles = this.utils.findModuleCSSFiles(allFiles);
       
-      assert.equals(1, cssFiles.length);
-      assert.same("test/app3/css/fullModuleWithCSS.css", cssFiles[0]);
-    },
-    "empty set": function() {
+      assert.equal(1, cssFiles.length);
+      assert.equal("test/app3/css/fullModuleWithCSS.css", cssFiles[0]);
+    });
+    it("empty set", function() {
       var allFiles = ['test/app1/js/fullModule'],
           cssFiles = this.utils.findModuleCSSFiles(allFiles);
       
-      assert.equals(0, cssFiles.length);
-    }
-  },
+      assert.equal(0, cssFiles.length);
+    });
+  });
   
-  "Test readLocaleFiles": {
-    "locales in control folder": function() {
+  describe("Test readLocaleFiles", function(){
+    it("locales in control folder", function() {
       var baseLocalePath = 'test/app1/js/fullModule/locales',
           langs = this.utils.readLocaleFiles(baseLocalePath, "fullModule");
       
       assert(langs != null && typeof(langs) == 'object');
-      assert.defined(langs.en);
-      assert.same(langs.en.title, 'value');
-      assert.same(langs.en.full, 'more');
-      assert.defined(langs.es);
-      assert.same(langs.es.title, 'espanol');
+      assert.isDefined(langs.en);
+      assert.equal(langs.en.title, 'value');
+      assert.equal(langs.en.full, 'more');
+      assert.isDefined(langs.es);
+      assert.equal(langs.es.title, 'espanol');
       
-    },
-    "locales in main locale folder": function() {
+    });
+    it("locales in main locale folder", function() {
       var baseLocalePath = 'test/locales',
           langs = this.utils.readLocaleFiles(baseLocalePath, "fullModuleWithCSS");
       
       assert(langs != null && typeof(langs) == 'object');
-      assert.defined(langs.en);
-      assert.same(langs.en.title, 'value');
-      refute.same(langs.en.full, 'more');
-      refute.same(langs.en.fromNoMatch, 'value');
-      assert.defined(langs.es);
-      assert.same(langs.es.title, 'espanol');
-    }
-  },
+      assert.isDefined(langs.en);
+      assert.equal(langs.en.title, 'value');
+      assert.notEqual(langs.en.full, 'more');
+      assert.notEqual(langs.en.fromNoMatch, 'value');
+      assert.isDefined(langs.es);
+      assert.equal(langs.es.title, 'espanol');
+    });
+  });
   
-  "Test extractMediaMeta": {
-    "plain path": function() {
+  describe("Test extractMediaMeta", function(){
+    it("plain path", function() {
       var meta = this.utils.extractMediaMeta("mypath");
-      assert.same("mypath", meta.path);
-      assert.same("screen", meta.mediaType);
-    },
-    "object": function() {
+      assert.equal("mypath", meta.path);
+      assert.equal("screen", meta.mediaType);
+    });
+    it("object", function() {
       var meta = this.utils.extractMediaMeta({print:"mypath"});
-      assert.same("mypath", meta.path);
-      assert.same("print", meta.mediaType);
-    }
-  },
+      assert.equal("mypath", meta.path);
+      assert.equal("print", meta.mediaType);
+    });
+  });
     
-  "Test mkdirRecursiveSync": {
-    setUp: function(){
+  describe("Test mkdirRecursiveSync", function(){
+    before(function(){
       this.baseFolder = "test/tmp";
       fs.mkdirSync(this.baseFolder);
-    },
+    });
     
-    tearDown: function(){
+    after(function(){
       fs.rmdirSync(this.baseFolder);
-    },
+    });
     
-    "make a single folder": function() {
+    it("make a single folder", function() {
       var folder = this.baseFolder + "/test1";
-      assert.same(true, this.utils.mkdirRecursiveSync(folder));
-      assert.same(true, fs.existsSync(folder));
+      assert.equal(true, this.utils.mkdirRecursiveSync(folder));
+      assert.equal(true, fs.existsSync(folder));
       
       fs.rmdirSync(folder);
-    },
+    });
     
-    "make a nested folder": function() {
+    it("make a nested folder", function() {
       var folder = this.baseFolder + "/more/test1";
-      assert.same(true, this.utils.mkdirRecursiveSync(folder));
-      assert.same(true, fs.existsSync(folder));
+      assert.equal(true, this.utils.mkdirRecursiveSync(folder));
+      assert.equal(true, fs.existsSync(folder));
       
       fs.rmdirSync(folder);
       fs.rmdirSync(this.baseFolder + "/more");
-    }
-  },
+    });
+  });
     
-  "Test expandPaths": {
-    "expand a single path": function(done){
+  describe("Test expandPaths", function(){
+    it("expand a single path", function(done){
       var basePaths = ['test/app1'];
       this.utils.expandPaths(basePaths, false, function(paths) {
-        assert.same(paths.length, 1);
-        assert.same(paths[0], "test/app1");
+        assert.equal(paths.length, 1);
+        assert.equal(paths[0], "test/app1");
         done();
       });
-    },
+    });
   
-    "expand multiple paths": function(done){
+    it("expand multiple paths", function(done){
       var basePaths = ['test/app1', 'test/app2'];
       this.utils.expandPaths(basePaths, false, function(paths) {
-        assert.equals(paths.length, 2);
-        refute.equals(paths.indexOf("test/app1"), -1);
-        refute.equals(paths.indexOf("test/app2"), -1);
+        assert.equal(paths.length, 2);
+        assert.notEqual(paths.indexOf("test/app1"), -1);
+        assert.notEqual(paths.indexOf("test/app2"), -1);
         done();
       });
-    },
+    });
   
-    "expand wildcard path": function(done){
+    it("expand wildcard path", function(done){
       var basePaths = ['test/app*'];
       this.utils.expandPaths(basePaths, false, function(paths) {
-        assert.equals(paths.length, 5);
-        refute.equals(paths.indexOf("test/app1"), -1);
-        refute.equals(paths.indexOf("test/app2"), -1);
-        refute.equals(paths.indexOf("test/app3"), -1);
-        refute.equals(paths.indexOf("test/app4"), -1);
-        refute.equals(paths.indexOf("test/app5"), -1);
+        assert.equal(paths.length, 5);
+        assert.notEqual(paths.indexOf("test/app1"), -1);
+        assert.notEqual(paths.indexOf("test/app2"), -1);
+        assert.notEqual(paths.indexOf("test/app3"), -1);
+        assert.notEqual(paths.indexOf("test/app4"), -1);
+        assert.notEqual(paths.indexOf("test/app5"), -1);
         done();
       });
-    },
+    });
   
-    "expand with scanDir path": function(done){
+    it("expand with scanDir path", function(done){
       var basePaths = ['test/app1'];
       this.utils.expandPaths(basePaths, "test/test_modules", function(paths) {
-        assert.equals(paths.length, 2);
-        refute.equals(paths.indexOf("test/app1"), -1);
-        refute.equals(paths.indexOf("test/test_modules/moduleWithControls/assets"), -1);
+        assert.equal(paths.length, 2);
+        assert.notEqual(paths.indexOf("test/app1"), -1);
+        assert.notEqual(paths.indexOf("test/test_modules/moduleWithControls/assets"), -1);
         done();
       });
-    },
+    });
   
-    "expand invalid path": function(done){
+    it("expand invalid path", function(done){
       var basePaths = ['noPath/here'];
       this.utils.expandPaths(basePaths, false, function(paths) {
-        assert.same(paths.length, 0);
+        assert.equal(paths.length, 0);
         done();
       });
-    }
-  },
+    });
+  });
 
-  "Test compressJS": {
-    "Compressing a typical JS string": function(){
+  describe("Test compressJS", function(){
+    it("Compressing a typical JS string", function(){
       var jsString = "var j = 1;";
       var compressed = this.utils.compressJS(jsString);
     
-      assert.equals(typeof(compressed), "string");
-      assert.equals("var j=1", compressed);
-    }
-  },
+      assert.equal(typeof(compressed), "string");
+      assert.equal("var j=1", compressed);
+    });
+  });
 
-  "Test gzipFile": {
-    "gzip a JS file": function(done){
+  describe("Test gzipFile", function(){
+    it("gzip a JS file", function(done){
       var contents = "var i=0;";
       this.utils.gzipString(contents, function(err, zipped){
-        assert.equals("H4sIAAAAAAAAAytLLFLItDWwBgB8kiehCAAAAA==", zipped.toString('base64'));
+        assert.equal("H4sIAAAAAAAAAytLLFLItDWwBgB8kiehCAAAAA==", zipped.toString('base64'));
         done();
       });
-    }
-  },
+    });
+  });
 
-  "Test generateHash": {
-    "Hash a string": function(){
+  describe("Test generateHash", function(){
+    it("Hash a string", function(){
       var s = "This is my string";
       var hash = this.utils.generateHash(s);
     
-      assert.equals(typeof(hash), "string");
-      assert.equals("c2a9ce57e8df081b4baad80d81868bbb", hash);
+      assert.equal(typeof(hash), "string");
+      assert.equal("c2a9ce57e8df081b4baad80d81868bbb", hash);
     
       s = s + " ";
       var hash2 = this.utils.generateHash(s);
     
-      refute.equals(hash, hash2);
-    }
-  },
+      assert.notEqual(hash, hash2);
+    });
+  });
 
-  "Test convertHTMLtoJS": {
-    setUp: function(){
+  describe("Test convertHTMLtoJS", function(){
+    before(function(){
       this.appendSnippetCode = function(js) {
         return js + "\n\n\nfunction getSnippets(){\nvar snip = document.createElement('div');\n$(snip).html(snippetsRaw);\n\nreturn snip;\n}\n";
       };
-    },
+    });
   
-    "convert plain text body content": function(){
+    it("convert plain text body content", function(){
       var html = "<html><body>MyText</body></html>";
       var js = this.utils.convertHTMLtoJS(html);
     
-      assert.equals(typeof(js), "string");
-      assert.equals(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"\";"), js);
-    },
+      assert.equal(typeof(js), "string");
+      assert.equal(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"\";"), js);
+    });
   
-    "convert body with tags": function(){
+    it("convert body with tags", function(){
       var html = "<html><body><a href='hello'>MyText</a></body></html>";
       var js = this.utils.convertHTMLtoJS(html);
     
-      assert.equals(typeof(js), "string");
-      assert.equals(this.appendSnippetCode("\nvar snippetsRaw = \"<a href='hello'>MyText</a>\\n\" + \n\"\";"), js);
-    },
+      assert.equal(typeof(js), "string");
+      assert.equal(this.appendSnippetCode("\nvar snippetsRaw = \"<a href='hello'>MyText</a>\\n\" + \n\"\";"), js);
+    });
   
-    "convert body with tags and double quotes": function(){
+    it("convert body with tags and double quotes", function(){
       var html = "<html><body><a href=\"hello\">MyText</a></body></html>";
       var js = this.utils.convertHTMLtoJS(html);
     
-      assert.equals(typeof(js), "string");
-      assert.equals(this.appendSnippetCode("\nvar snippetsRaw = \"<a href=\\\"hello\\\">MyText</a>\\n\" + \n\"\";"), js);
-    },
+      assert.equal(typeof(js), "string");
+      assert.equal(this.appendSnippetCode("\nvar snippetsRaw = \"<a href=\\\"hello\\\">MyText</a>\\n\" + \n\"\";"), js);
+    });
   
-    "convert multiline body": function(){
+    it("convert multiline body", function(){
       var html = "<html><body>MyText\nNewLine</body></html>";
       var js = this.utils.convertHTMLtoJS(html);
     
-      assert.equals(typeof(js), "string");
-      assert.equals(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"NewLine\\n\" + \n\"\";"), js);
-    },
+      assert.equal(typeof(js), "string");
+      assert.equal(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"NewLine\\n\" + \n\"\";"), js);
+    });
   
-    "convert html with exclude lines": function(){
+    it("convert html with exclude lines", function(){
       var html = "<html><body>MyText\nRemoveLine<!-- exclude LINE -->\nLastLine</body></html>";
       var js = this.utils.convertHTMLtoJS(html);
     
-      assert.equals(typeof(js), "string");
-      assert.equals(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"LastLine\\n\" + \n\"\";"), js);
-    },
+      assert.equal(typeof(js), "string");
+      assert.equal(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"LastLine\\n\" + \n\"\";"), js);
+    });
   
-    "convert html with multiline exclude comments": function(){
+    it("convert html with multiline exclude comments", function(){
       var html = "<html><body>MyText\n<!-- exclude START -->\nRemoveLine1\nRemoveLine2\n<!-- exclude END -->\nLastLine</body></html>";
       var js = this.utils.convertHTMLtoJS(html);
     
-      assert.equals(typeof(js), "string");
-      assert.equals(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"LastLine\\n\" + \n\"\";"), js);
-    }
-  }
+      assert.equal(typeof(js), "string");
+      assert.equal(this.appendSnippetCode("\nvar snippetsRaw = \"MyText\\n\" + \n\"LastLine\\n\" + \n\"\";"), js);
+    });
+  });
 });

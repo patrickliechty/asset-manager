@@ -18,10 +18,12 @@
     "debug": "~0.7.2"
   },
   "devDependencies": {
-    "buster": "0.6.x"
+    "mocha": "1.4.x",
+    "chai": "1.6.x",
+    "sinon": "1.4.x"
   },
   "scripts": {
-    "test": "buster test"
+    "test": "node_modules/.bin/mocha test/*-test.js -R spec"
   },
   "main": "lib/asset-manager.js",
   "engines": {
