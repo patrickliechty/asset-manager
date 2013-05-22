@@ -88,6 +88,22 @@ describe("Asset Manager", function() {
         assert.equal("unresolvedPath.png?query#hash", this.context.img("unresolvedPath.png?query#hash"));
       });
     });
+
+    describe("wrappedJS", function() {
+      before(function(done) {
+        this.am.start({
+          paths: ['test/app3'],
+          context: this.context
+        }, function() {
+          done();
+        });
+      });
+
+      it("should wrap js file in closure with modules.exports defined", function() {
+        var content = this.am.wrappedJS("/app3.js");
+        assert.equal("FS._modules = FS._modules || {};\nFS._modules['app3'] = {exports:{}};\n(function(modules) {\nalert('hello');\n})\n(FS._modules['app3']);", content);
+      });
+    });
     
     describe("with scanDir", function(){
       before(function(done) {
