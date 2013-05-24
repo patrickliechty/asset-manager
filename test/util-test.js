@@ -1,4 +1,5 @@
 var assert = require("chai").assert,
+    expect = require("chai").expect,
     fs = require('fs'),
     path = require('path');
 
@@ -145,6 +146,39 @@ describe("Utils tests", function(){
       fs.rmdirSync(this.baseFolder + "/more");
     });
   });
+
+  describe("getListOfAllFiles", function() {
+    it("should find all assets in path", function(done) {
+      this.utils.getListOfAllFiles(["test/app3"])(function(err, files) {
+        expect(files).to.have.length(16);
+        done();
+      });
+    });
+
+    it("should find all assets in multiple paths", function(done) {
+      this.utils.getListOfAllFiles(["test/app3", "test/app1"])(function(err, files) {
+        expect(files).to.have.length(29);
+        done();
+      });
+    });
+  });
+
+  describe("getListOfFoldersWithAssemblyFiles", function() {
+    it("should find folders with assembly.json files", function(done) {
+      this.utils.getListOfFoldersWithAssemblyFiles(["test/app3"])(function(err, files) {
+        expect(files).to.have.length(1);
+        expect(files[0]).to.equal("test/app3/js/fullModuleWithCSS");
+        done();
+      });
+    });
+
+    it("should find folders with assembly.json files with more than one source path", function(done) {
+      this.utils.getListOfFoldersWithAssemblyFiles(["test/app3", "test/app1"])(function(err, files) {
+        expect(files).to.have.length(2);
+        done();
+      });
+    });
+  });
     
   describe("Test expandPaths", function(){
     it("expand a single path", function(done){
@@ -155,6 +189,18 @@ describe("Utils tests", function(){
         done();
       });
     });
+
+    // it("expand a single path with modules", function(done){
+    //   var basePaths = ['test/app3'];
+    //   this.utils.expandPaths(basePaths, false, function(paths, modulePaths) {
+    //     assert.equal(paths.length, 1);
+    //     assert.equal(paths[0], "test/app3");
+
+    //     assert.equal(modulePaths.length, 1);
+    //     assert.equal(modulePaths[0], "test/app3/js/modules/fullModuleWithCSS");
+    //     done();
+    //   });
+    // });
   
     it("expand multiple paths", function(done){
       var basePaths = ['test/app1', 'test/app2'];

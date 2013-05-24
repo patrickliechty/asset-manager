@@ -1,4 +1,5 @@
 var assert = require("chai").assert,
+    expect = require("chai").expect,
     rimraf = require('rimraf'),
     fs = require('fs'),
     path = require('path'),
@@ -60,9 +61,13 @@ describe("Asset Manager", function() {
       });
       
       it("check img resolution", function(){
-        assert.equal("/img/arrow3.png", this.context.img("arrow3.png"));
-        assert.equal("/img/arrow3.png", this.context.img("/arrow3.png"));
+        expect(this.context.img("arrow3.png")).to.equal("/img/arrow3.png");
+        expect(this.context.img("/arrow3.png")).to.equal("/img/arrow3.png");
       });
+
+      // it("should resolve images found module folders", function() {
+      //   expect(this.context.img("/arrowInModule.png")).to.equal("/img/arrowInModule.png");
+      // });
       
       it("absolute paths", function() {
         assert.equal("<script src='http://path.com/me.js'></script>", this.context.js("http://path.com/me.js"));
