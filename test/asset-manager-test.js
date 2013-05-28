@@ -233,7 +233,9 @@ describe("Asset Manager", function() {
         
         assert.equal(true, fs.existsSync(path.join(tmpDir, "css", "app3-fcdce6b6d6e2175f6406869882f6f1ce.css")));
         assert.equal(true, fs.existsSync(path.join(tmpDir, "css", "fullModuleWithCSS-fcdce6b6d6e2175f6406869882f6f1ce.css")));
+        expect(fs.existsSync(path.join(tmpDir, "css", "other-fcdce6b6d6e2175f6406869882f6f1ce.css"))).to.equal(true);
         assert.equal(true, fs.existsSync(path.join(tmpDir, "img", "arrow3-dd0ecf27272f0daade43058090491241.png")));
+        expect(fs.existsSync(path.join(tmpDir, "img", "arrowInModule-dd0ecf27272f0daade43058090491241.png"))).to.equal(true);
         
         var manifest = fs.readFileSync(path.join(tmpDir, "manifest.json"), 'utf8');
         manifest = JSON.parse(manifest);

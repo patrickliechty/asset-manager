@@ -48,7 +48,14 @@ describe("Utils tests", function(){
 
   describe("Test filterAssembliesFiles", function(){
     it("simple set", function() {
-      var allFiles = ['file1.txt', 'file2.txt', 'module/file3.txt', 'module/file4.txt'],
+      var allFiles = ['file1.txt', 'file2.txt', 'module/file3.js', 'module/file4.json'],
+          assemblyFolders = ['module'],
+          filtered = this.utils.filterAssembliesFiles(allFiles, assemblyFolders);
+      
+      assert.equal(3, filtered.length);
+    });
+    it("allow css and img folders in module folder", function() {
+      var allFiles = ['module/file3.js', 'module/file4.json', 'module/css/other.css', 'module/img/image.gif'],
           assemblyFolders = ['module'],
           filtered = this.utils.filterAssembliesFiles(allFiles, assemblyFolders);
       
