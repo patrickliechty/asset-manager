@@ -1,4 +1,5 @@
 var assert = require("chai").assert,
+    expect = require("chai").expect,
     rimraf = require('rimraf'),
     fs = require('fs'),
     path = require('path'),
@@ -60,8 +61,16 @@ describe("Asset Manager", function() {
       });
       
       it("check img resolution", function(){
-        assert.equal("/img/arrow3.png", this.context.img("arrow3.png"));
-        assert.equal("/img/arrow3.png", this.context.img("/arrow3.png"));
+        expect(this.context.img("arrow3.png")).to.equal("/img/arrow3.png");
+        expect(this.context.img("/arrow3.png")).to.equal("/img/arrow3.png");
+      });
+
+      it("should resolve images found in module folders", function() {
+        expect(this.context.img("/arrowInModule.png")).to.equal("/img/arrowInModule.png");
+      });
+
+      it("should resolve css found in module folders", function() {
+        expect(this.context.img("/other.css")).to.equal("<link href='/css/other.css' rel='stylesheet' media='screen'>");
       });
       
       it("absolute paths", function() {
@@ -86,6 +95,22 @@ describe("Asset Manager", function() {
         assert.equal("<script src='unresolvedPath.js?query#hash'></script>", this.context.js("unresolvedPath.js?query#hash"));
         assert.equal("<link href='unresolvedPath.css?query#hash' rel='stylesheet' media='screen'>", this.context.css("unresolvedPath.css?query#hash"));
         assert.equal("unresolvedPath.png?query#hash", this.context.img("unresolvedPath.png?query#hash"));
+      });
+    });
+
+    describe("wrappedJS", function() {
+      before(function(done) {
+        this.am.start({
+          paths: ['test/app3'],
+          context: this.context
+        }, function() {
+          done();
+        });
+      });
+
+      it("should wrap js file in closure with modules.exports defined", function() {
+        var content = this.am.wrappedJS("/app3.js");
+        assert.equal("window.FS = window.FS || {};\nFS._modules = FS._modules || {};\nFS._modules['app3'] = {exports:{}};\n(function(module, exports) {\nalert('hello');\n})(FS._modules['app3'], FS._modules['app3'].exports);", content);
       });
     });
     
@@ -148,6 +173,14 @@ describe("Asset Manager", function() {
         assert.equal("/img/arrow3-dd0ecf27272f0daade43058090491241.png", this.context.img("arrow3.png"));
       });
       
+      it("image should resolve in module folder", function(){
+        expect(this.context.img("arrowInModule.png")).to.equal("/img/arrowInModule-dd0ecf27272f0daade43058090491241.png");
+      });
+      
+      it("css should resolve in module folder", function(){
+        expect(this.context.css("other.css")).to.equal("<link href='/css/other-fcdce6b6d6e2175f6406869882f6f1ce.css' rel='stylesheet' media='screen'>");
+      });
+      
       it("check font resolution", function(){
         assert.equal("/img/webfonts/League_Gothic-webfont-036cfa9c2ade08c1a4ee234526201dc8.eot", this.context.img("webfonts/League_Gothic-webfont.eot"));
         assert.equal("/img/webfonts/League_Gothic-webfont-036cfa9c2ade08c1a4ee234526201dc8.eot?#iefix", this.context.img("webfonts/League_Gothic-webfont.eot?#iefix"));
@@ -200,7 +233,9 @@ describe("Asset Manager", function() {
         
         assert.equal(true, fs.existsSync(path.join(tmpDir, "css", "app3-fcdce6b6d6e2175f6406869882f6f1ce.css")));
         assert.equal(true, fs.existsSync(path.join(tmpDir, "css", "fullModuleWithCSS-fcdce6b6d6e2175f6406869882f6f1ce.css")));
+        expect(fs.existsSync(path.join(tmpDir, "css", "other-fcdce6b6d6e2175f6406869882f6f1ce.css"))).to.equal(true);
         assert.equal(true, fs.existsSync(path.join(tmpDir, "img", "arrow3-dd0ecf27272f0daade43058090491241.png")));
+        expect(fs.existsSync(path.join(tmpDir, "img", "arrowInModule-dd0ecf27272f0daade43058090491241.png"))).to.equal(true);
         
         var manifest = fs.readFileSync(path.join(tmpDir, "manifest.json"), 'utf8');
         manifest = JSON.parse(manifest);
