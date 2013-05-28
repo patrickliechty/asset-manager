@@ -1,14 +1,15 @@
 var assert = require("chai").assert,
+    expect = require("chai").expect,
     path = require('path');
 
 describe("contentResolver tests", function(){
-  before(function(){
+  beforeEach(function() {
     this.cr = require('../lib/contentResolver');
   });
-  
+
   describe("Test single file resolution with NO compression", function() {
-    before(function(){
-      this.cf = this.cr(['test/app1'], false);
+    beforeEach(function() {
+      this.cf = this.cr(['test/app1'], null, false);
     });
     
     it("for a js file", function() {
@@ -29,23 +30,47 @@ describe("contentResolver tests", function(){
       assert.equal(path.resolve("test/app1/img/arrow.png"), img.getDiskPath());
     });
   });
+
+  describe("static files in modules should resolve", function() {
+    beforeEach(function() {
+      this.cf = this.cr(['test/app3'], ['test/app3/js/fullModuleWithCSS'], null, false);
+    });
+
+    it("should resolve a css file in a module folder", function() {
+      var css = this.cf("", "other", "css", "css");
+
+      expect(css.getDiskPath()).to.equal(path.resolve("test/app3/js/fullModuleWithCSS/css/other.css"));
+    });
+
+    it("should resolve a css file of same name as module in a module root folder", function() {
+      var css = this.cf("", "fullModuleWithCSS", "css", "css");
+
+      expect(css.getDiskPath()).to.equal(path.resolve("test/app3/js/fullModuleWithCSS/fullModuleWithCSS.css"));
+    });
+
+    it("should resolve an img file in a module folder", function() {
+      var img = this.cf("", "arrowInModule", "png", "img");
+
+      expect(img.getDiskPath()).to.equal(path.resolve("test/app3/js/fullModuleWithCSS/img/arrowInModule.png"));
+    });
+  });
   
   describe("Test single file resolution with compression", function() {
-    before(function(){
-      this.cf = this.cr(['test/app1'], true);
+    beforeEach(function() {
+      this.cf = this.cr(['test/app1'], null, true);
     });
     
     it("for a js file", function() {
       var js = this.cf("", "app1", "js", "js");
-      assert.equal(path.resolve("test/app1/js/app1.js"), js.getDiskPath());
-      assert.equal("alert(\"hello\")", js.getContent());
-      assert.equal("alert( 'hello' );", js.getContentRaw());
+      expect(js.getDiskPath()).to.equal(path.resolve("test/app1/js/app1.js"));
+      expect(js.getContent('utf8')).to.equal("alert(\"hello\")");
+      expect(js.getContentRaw('utf8')).to.equal("alert( 'hello' );");
     });
   });
   
   describe("Test assembled module resolution with NO compression", function() {
-    before(function(){
-      this.cf = this.cr(['test/app1', 'test/app2', 'test/app3', 'test/app4/assets', 'test/app4/dummy_modules/shared-ui-dummy/assets', 'test/app4/dummy_modules/shared-ui-dummy/vendors/taco'], false);
+    beforeEach(function() {
+      this.cf = this.cr(['test/app1', 'test/app2', 'test/app3', 'test/app4/assets', 'test/app4/dummy_modules/shared-ui-dummy/assets', 'test/app4/dummy_modules/shared-ui-dummy/vendors/taco'], null, false);
     });
     
     it("for a simpleModule", function() {
