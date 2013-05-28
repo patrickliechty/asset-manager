@@ -65,9 +65,13 @@ describe("Asset Manager", function() {
         expect(this.context.img("/arrow3.png")).to.equal("/img/arrow3.png");
       });
 
-      // it("should resolve images found module folders", function() {
-      //   expect(this.context.img("/arrowInModule.png")).to.equal("/img/arrowInModule.png");
-      // });
+      it("should resolve images found in module folders", function() {
+        expect(this.context.img("/arrowInModule.png")).to.equal("/img/arrowInModule.png");
+      });
+
+      it("should resolve css found in module folders", function() {
+        expect(this.context.img("/other.css")).to.equal("<link href='/css/other.css' rel='stylesheet' media='screen'>");
+      });
       
       it("absolute paths", function() {
         assert.equal("<script src='http://path.com/me.js'></script>", this.context.js("http://path.com/me.js"));
@@ -167,6 +171,14 @@ describe("Asset Manager", function() {
       
       it("check img resolution", function(){
         assert.equal("/img/arrow3-dd0ecf27272f0daade43058090491241.png", this.context.img("arrow3.png"));
+      });
+      
+      it("image should resolve in module folder", function(){
+        expect(this.context.img("arrowInModule.png")).to.equal("/img/arrowInModule-dd0ecf27272f0daade43058090491241.png");
+      });
+      
+      it("css should resolve in module folder", function(){
+        expect(this.context.css("other.css")).to.equal("<link href='/css/other-fcdce6b6d6e2175f6406869882f6f1ce.css' rel='stylesheet' media='screen'>");
       });
       
       it("check font resolution", function(){
