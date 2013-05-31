@@ -110,7 +110,7 @@ describe("Asset Manager", function() {
 
       it("should wrap js file in closure with modules.exports defined", function() {
         var content = this.am.wrappedJS("/app3.js");
-        assert.equal("window.FS = window.FS || {};\nFS._modules = FS._modules || {};\nFS._modules['app3'] = {exports:{}};\n(function(module, exports) {\nalert('hello');\nfunction __get__(){ return eval(arguments[0]); };\n module.__get__ = __get__;\n})(FS._modules['app3'], FS._modules['app3'].exports);", content);
+        assert.equal("window.FS = window.FS || {};\nFS._modules = FS._modules || {};\nFS._modules['app3'] = {exports:{}};\n(function(module, exports) {\nalert('hello');\nfunction __get__(){ return eval(arguments[0]); };\n module.__get__ = __get__;\nfunction __set__(){ arguments.src = arguments[0] + ' = arguments[1];'; eval(arguments.src); };\n module.__set__ = __set__;\n})(FS._modules['app3'], FS._modules['app3'].exports);", content);
       });
     });
     
