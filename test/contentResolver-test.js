@@ -105,13 +105,11 @@ describe("contentResolver tests", function(){
 
     it("for simpleWrap", function() {
       var js = this.cf("", "wrapModule", "js", "js");
-      console.log(js.getContent().toString())
       assert.equal(js.getContent(), "//Module assembly: wrapModule\n\n(function(window,undefined){\n\n/*\n * Included File: main.js\n */\n\nalert('test');\n\n}(this));");
     });
 
     it("for complex wrap", function() {
       var js = this.cf("", "complexWrapModule", "js", "js");
-      console.log(js.getContent().toString())
       assert.equal(js.getContent(), "//Module assembly: complexWrapModule\n\n(function(window,$,undefined){\n\n/*\n * Included File: main.js\n */\n\nalert('test');\n\n}(this,jQuery));");
     });
   });
