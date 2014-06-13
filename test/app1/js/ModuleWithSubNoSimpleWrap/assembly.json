@@ -1,0 +1,9 @@
+{
+  "assemblies": [
+    "subModule"
+  ],
+  "files": [
+    "main.js"
+  ],
+  "simpleWrap": true
+}

@@ -1,0 +1,7 @@
+{
+  "assemblies": [
+    "subModule1",
+    "subModule2"
+  ],
+  "simpleWrap": true
+}
