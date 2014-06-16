@@ -93,8 +93,7 @@ describe("contentResolver tests", function(){
 
     it("with template folder", function() {
       var js = this.cf("", "templateModule", "js", "js");
-      var out = js.getContent();
-      assert.equal(out, "//Module assembly: templateModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='main.js';\n\n\nvar templateList = {};\n\n/*\n * Included File: templates/one.html\n */\n\ntemplateList.one = \"<b>one</b>\\n\";\n\n/*\n * Included File: templates/two.html\n */\n\ntemplateList.two = \"<i>two</i>\\n\";\n\n}(window));");
+      assert.equal(js.getContent(), "//Module assembly: templateModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='main.js';\n\n\nvar templateList = {};\n\n/*\n * Included File: templates/one.html\n */\n\ntemplateList.one = \"<b>one</b>\\n\";\n\n/*\n * Included File: templates/two.html\n */\n\ntemplateList.two = \"<i>two</i>\\n\";\n\n}(window));");
     });
 
     it("for a Module with spread out parts (Uses Asset Resolution Paths)", function() {
@@ -122,6 +121,11 @@ describe("contentResolver tests", function(){
     it("for sub assembly", function() {
       var js = this.cf("", "ModuleWithSub", "js", "js");
       assert.equal(js.getContent(), "//Module assembly: ModuleWithSub\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n//Module sub-assembly: subModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='subMain.js';\n\n\n}(window));\n\n");
+    });
+
+    it("for just a sub assembly", function() {
+      var js = this.cf("", "ModuleWithSub/subModule", "js", "js");
+      assert.equal(js.getContent(), "//Module assembly: subModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='subMain.js';\n\n\n}(window));");
     });
 
     it("for two sub assemblies", function() {
