@@ -93,7 +93,8 @@ describe("contentResolver tests", function(){
 
     it("with template folder", function() {
       var js = this.cf("", "templateModule", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: templateModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='main.js';\n\n\nvar templateList = {};\n\n/*\n * Included File: templates/one.html\n */\n\ntemplateList.one = \"<b>one</b>\\n\";\n\n/*\n * Included File: templates/two.html\n */\n\ntemplateList.two = \"<i>two</i>\\n\";\n\n}(window));");
+      assert.equal(js.getContent(), "//Module assembly: templateModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='main.js';\n\n\n  var templateList = {};\n\n/*\n * Included File: templates/one.html\n */\n\n  templateList.one = \"<b>one</b>\\n\";\n\n/*\n * Included File: templates/two.html\n */\n\n  templateList.two = \"<i>two</i>\\n\";\n\n  function getTemplateStr(key) {\n    return templateList[key]||\"\";\n  }\n\n  function getTemplate(key) {\n    var snip = document.createElement(\"div\");\n    $(snip).html(getTemplateStr(key));\n    return snip;\n  }\n}(window));");
+
     });
 
     it("for a Module with spread out parts (Uses Asset Resolution Paths)", function() {
