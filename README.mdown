@@ -189,18 +189,18 @@ of the filenames in the `locales` folder is also `MyItem`.
 
 ```
 MyItem
-|
-+-- assembly.json
-+-- template
-|   |
-|   +-- myFile.html
-|
-+-- locale
-    |
-    +-- MyItem_en.json
-    +-- MyItem_fr.json
-    +-- MyItem_ja.json
-    +-- MyItem_zh.json
+│
+├── assembly.json
+├── template
+│   │
+│   └── myFile.html
+│
+└── locale
+    │
+    ├── MyItem_en.json
+    ├── MyItem_fr.json
+    ├── MyItem_ja.json
+    └── MyItem_zh.json
 ```
 Each file in the `locales` folder identifies which language it supports by appending an underscore and the two letter
 locale to the filename. So `_en` represents English, `_fr` reperesents French, etc. You MUST have the `_en` file in
