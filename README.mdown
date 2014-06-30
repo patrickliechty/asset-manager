@@ -57,7 +57,7 @@ Express middle ware to do this (the final parameter is whether or not the assets
 
 ### Precompile assets
 
-You can precompile your assets into their production form as follows (CDN_BASE_URL should be set to whatever url you want
+You can precompile your assets into their production form as follows (CDN_BASE_URL should be set to whatever URL you want
 prepended to your static asset paths):
 
     assetManager.precompile({
@@ -74,7 +74,7 @@ If you like, you can pass any of these options to the `start` or `precompile` fu
 
 * `paths` (required): An array of paths that should be used to find static assets.
 * `inProd` (defaults to `false`): Indicates whether the application is running in production mode or not.
-* `servePath` (defaults to ''): The path you want to append to all asset urls.  Useful for pointing at an external CDN location.
+* `servePath` (defaults to ''): The path you want to append to all asset URLs.  Useful for pointing at an external CDN location.
 * `builtAssets` (defaults to 'builtAssets'): The folder you want precompiled assets to be placed in.
 * `context` (defaults to global): The object you want to hang the 'css', 'js', and 'img' functions on for resolving static assets.
 * `gzip` (defaults to false): Whether or not to gzip the contents of 'css' and 'js' files.
@@ -90,8 +90,8 @@ if the folder name was `widget` then the output file would be called `widget.js`
 an output file named `MyControl.js` (Notice the case of the filename.)
 
 There are three main sections of the assembly.json file:
-* `files` (array of files): The list of one or more files, normally javascript files, to combine into the output file.
-* `simpleWrap` (true/false): If true then wrap the output file in a Immediately-Invoked Function Expression (IIFE). This is a functio closeure that is wrapped around the code to prevent namespace leakage.
+* `files` (array of files): The list of one or more files, normally JavaScript files, to combine into the output file.
+* `simpleWrap` (true/false): If true then wrap the output file in a Immediately-Invoked Function Expression (IIFE). This is a function closure that is wrapped around the code to prevent namespace leakage.
 * `assemblies` (array of folders): A list of one or more folders which contain an `assembly.json` file that is assembled into the output file.
 
 ### files
@@ -100,10 +100,10 @@ There are three main sections of the assembly.json file:
 
 ```
 {
-  'files': [
-    'main.js',
-    'folder1/other.js',
-    'folder2/additional.js'
+  "files": [
+    "main.js",
+    "folder1/other.js",
+    "folder2/additional.js"
   ]
 }
 ```
@@ -114,14 +114,14 @@ All files in the `files` array are relative to the path of the assembly.json fil
 
 `simpleWrap` indicates the developers desire to wrap this assembly output file inside of an IIFE.
 It is recommended that this option be set to `true` in most cases. This helps to protect your code,
-in an IIFE closeure, and prevents your code from poluting the global namespace.
+in an IIFE closure, and prevents your code from polluting the global namespace.
 
 ```
 {
-  'files': [
-    'myfile.js'
+  "files": [
+    "myfile.js"
   ],
-  'simpleWrap': true
+  "simpleWrap": true
 }
 ```
 
@@ -134,13 +134,13 @@ variables. (Variables accessible off of window.)
 
 ```
 {
-  'assemblies': [
-    'sub1',
-    'sub2',
-    'thingy/item1',
-    'thingy/item2'
+  "assemblies": [
+    "sub1",
+    "sub2",
+    "thingy/item1",
+    "thingy/item2"
   ],
-  'simpleWrap': true
+  "simpleWrap": true
 }
 ```
 
@@ -184,7 +184,7 @@ The Asset Manager uses special files and folders when processing an `assembly.js
 
 The locale folder is used to store language specific strings in a series of JSON files. These files must have specific
 names for Asset Manager to use them. The prefix of the filenames must match exactly, including case, of the name of
-the folder that holds the locale folder. In the exmaple below the name of the folder is `MyItem` and the prefix of all
+the folder that holds the locale folder. In the example below the name of the folder is `MyItem` and the prefix of all
 of the filenames in the `locales` folder is also `MyItem`.
 
 ```
@@ -203,10 +203,10 @@ MyItem
     └── MyItem_zh.json
 ```
 Each file in the `locales` folder identifies which language it supports by appending an underscore and the two letter
-locale to the filename. So `_en` represents English, `_fr` reperesents French, etc. You MUST have the `_en` file in
+locale to the filename. So `_en` represents English, `_fr` represents French, etc. You MUST have the `_en` file in
 all cases or the locale system fails.
 
-When these locale strings are loaded into the system they are accesible through the `langs` object. `langs.en.OPEN`
+When these locale strings are loaded into the system they are accessible through the `langs` object. `langs.en.OPEN`
 will access the value for `OPEN` from the `_en` file. While `langs.fr.OPEN` will access the value for `OPEN` from
 the `_fr` file.
 
@@ -222,15 +222,15 @@ translated we get the English string.
 #### template.html
 
 The `template.html` function is a way of adding html templates into an assembly. The Asset Manager
-converts the content of the `template.html` file into a javascript string and save it as the variable `snippetsRaw`.
+converts the content of the `template.html` file into a JavaScript string and save it as the variable `snippetsRaw`.
 If there is a `<body>` tag in the template then just the contents of the `<body>` tag is included in `snippetsRaw`.
 
 Your code can access `snippetsRaw` to get at the content of the template as a string. Or you can call the function
 `getSnippets()` to get the contents of the template back as DOM elements in a single `<div>` element. `getSnippets()`
 also translates the template before converting it to DOM elements. More on translation below.
 
-`template.html` allows you to exclude lines and sections. To exlude a line just add
-`<!-- exclude LINE -->` to anywhere on that line. Asset Manager will remove the entire line.
+`template.html` allows you to exclude lines and sections. To exclude a line just add
+`<!-- exclude LINE -->` anywhere on that line. Asset Manager will remove the entire line.
 
 To exclude a section place `<!-- exclude START -->` on the first line to exclude and
 `<!-- exclude END -->` on the last line to excluded. Asset Manager will exclude everything from the
@@ -239,7 +239,7 @@ first line to the last line, including everything on those lines.
 
 #### templates folder
 
-The `templates` folder is a way to provide multiple, independant, templates to your code. The templates folder
+The `templates` folder is a way to provide multiple, independent, templates to your code. The templates folder
 works great for a series of AngularJS directives that each need their own template. It also works well for any
 code that needs to get at different templates without the need to dig into the DOM created by `getSnippets()`.
 
@@ -329,7 +329,7 @@ Be aware that any translation key that is not found in the locale files will be 
 
 ##### Translation keys vs. AngularJS scope variables
 
-You must be careful to not use an AnglarJS scope variable that is the same name as a translation key.
+You must be careful to not use an AngularJS scope variable that is the same name as a translation key.
 Or it will be changed:
 
 *Translation file:*
@@ -356,7 +356,7 @@ Or it will be changed:
 <p>{Close this}</p>
 ```
 
-You either need to change the Angular scope varaible name or the translation key to prevent this problem.
-If the translation key is all caps and the scope variables are CamelCase format this should prevent this
+You should either change the Angular scope variable name or the translation key to prevent this problem.
+Writing the translation key in all caps and the scope variables in CamelCase format should prevent this
 from happening.
 
