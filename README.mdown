@@ -243,7 +243,7 @@ The `templates` folder is a way to provide multiple, independent, templates to y
 works great for a series of AngularJS directives that each need their own template. It also works well for any
 code that needs to get at different templates without the need to dig into the DOM created by `getSnippets()`.
 
-Inside the `tempaltes` folder you can create one or more `.html` files and each of these become a separately
+Inside the `templates` folder you can create one or more `.html` files and each of these become a separately
 accessible template. Each template file must use the `.html` extension and can only use alphanumeric characters
 in the filename.
 
@@ -256,7 +256,7 @@ Template files in the `templates` folder should only contain the code needed in 
 attempt to only grab the contents of the `<body>` tag.
 
 You code can access the templates by using the member variable of the `templateList` variable. `templateList.button`
-would give you the content of the file `tempaltes/button.html` and `tempalteList.form` would give you the contents
+would give you the content of the file `templates/button.html` and `templateList.form` would give you the contents
 of the file `templates/form.html`.
 
 You can also get the translated content by calling the function `getTemplateStr(key)` where `key` would be a string
