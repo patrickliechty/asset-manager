@@ -1,8 +1,8 @@
 # asset-manager
 
-Static asset manager that allows you to declare multiple asset folders that will be searched when
+Static Asset Manager that allows you to declare multiple asset folders that will be searched when
 resolving static assets in your app.  This library also provides the ability to precompile all of the static assets
-into their production form (e.g., minified content with hashed filenames).  The precompile step generates a manifest 
+into their production form (e.g., minified content with hashed filenames).  The precompile step generates a manifest
 file that will be used in production to resolve requested assets.  It also generates a clientManifest that can be in the
 browser to dynamically load static assets (e.g., people using the Inject dependency management library - https://github.com/linkedin/inject)
 
@@ -21,8 +21,8 @@ Then add this line to your app's configuration:
 Finally, initialize the manager with the paths it should search for static assets:
 
     assetManager.start({
-        paths: ["assets", 
-                "../global/assets", 
+        paths: ["assets",
+                "../global/assets",
                 "vendor"],
         inProd: (process.env.NODE_ENV === 'production')
       }, callback);
@@ -57,12 +57,12 @@ Express middle ware to do this (the final parameter is whether or not the assets
 
 ### Precompile assets
 
-You can precompile your assets into their production form as follows (CDN_BASE_URL should be set to whatever url you want
+You can precompile your assets into their production form as follows (CDN_BASE_URL should be set to whatever URL you want
 prepended to your static asset paths):
 
     assetManager.precompile({
-        paths: ["assets", 
-                "../global/assets", 
+        paths: ["assets",
+                "../global/assets",
                 "vendor")],
         servePath: CDN_BASE_URL,
         gzip: true
@@ -73,9 +73,290 @@ prepended to your static asset paths):
 If you like, you can pass any of these options to the `start` or `precompile` functions:
 
 * `paths` (required): An array of paths that should be used to find static assets.
-* `inProd` (defaults to `false`): Indicates whether the application is running in production mode or not. 
-* `servePath` (defaults to ''): The path you want to append to all asset urls.  Useful for pointing at an external CDN location.
+* `inProd` (defaults to `false`): Indicates whether the application is running in production mode or not.
+* `servePath` (defaults to ''): The path you want to append to all asset URLs.  Useful for pointing at an external CDN location.
 * `builtAssets` (defaults to 'builtAssets'): The folder you want precompiled assets to be placed in.
 * `context` (defaults to global): The object you want to hang the 'css', 'js', and 'img' functions on for resolving static assets.
 * `gzip` (defaults to false): Whether or not to gzip the contents of 'css' and 'js' files.
 * `scanDir` (defaults to ''): Include a base path you want asset-manager to scan for modules that contain `asset-manifest.json` files indicating the module contains static assets that should be available for use.
+
+# USAGE
+
+##  assembly.json parameters
+
+The Asset Manager uses the file assembly.json to define the list of file to combine into the output file. The output
+filename will be the name of the folder that holds the assembly.json file with the filename extension of `.js`. So
+if the folder name was `widget` then the output file would be called `widget.js`. A folder named `MyControl` would produce
+an output file named `MyControl.js` (Notice the case of the filename.)
+
+There are three main sections of the assembly.json file:
+* `files` (array of files): The list of one or more files, normally JavaScript files, to combine into the output file.
+* `simpleWrap` (true/false): If true then wrap the output file in a Immediately-Invoked Function Expression (IIFE). This is a function closure that is wrapped around the code to prevent namespace leakage.
+* `assemblies` (array of folders): A list of one or more folders which contain an `assembly.json` file that is assembled into the output file.
+
+### files
+
+`files` is an array of files that are to be included in the output file.
+
+```
+{
+  "files": [
+    "main.js",
+    "folder1/other.js",
+    "folder2/additional.js"
+  ]
+}
+```
+
+All files in the `files` array are relative to the path of the assembly.json file.
+
+### simpleWrap
+
+`simpleWrap` indicates the developers desire to wrap this assembly output file inside of an IIFE.
+It is recommended that this option be set to `true` in most cases. This helps to protect your code,
+in an IIFE closure, and prevents your code from polluting the global namespace.
+
+```
+{
+  "files": [
+    "myfile.js"
+  ],
+  "simpleWrap": true
+}
+```
+
+### assemblies
+`assemblies` is an array of folders which contain an `assembly.json` file that is assembled into the output file.
+Each assembly.json file **must** have `simpleWrap` set to `true` to place in it's own IIFE scope so
+they can each have their own language files and templates. This also provides a unique namespace for
+each assembly. So accessing values and functions between assemblies must be done through truly global
+variables. (Variables accessible off of window.)
+
+```
+{
+  "assemblies": [
+    "sub1",
+    "sub2",
+    "thingy/item1",
+    "thingy/item2"
+  ],
+  "simpleWrap": true
+}
+```
+
+For this assembly to work we would need the file structure to look like this:
+
+```
+componentFolder
+│
+├── assembly.json
+├── sub1
+│   │
+│   ├── assembly.json
+│   └── file.js
+│
+├── sub2
+│   │
+│   ├── assembly.json
+│   └── file.js
+│
+└── thingy
+    │
+    ├── item1
+    │   │
+    │   ├── assembly.json
+    │   └── file.js
+    │
+    └── item2
+        │
+        ├── assembly.json
+        └── file.js
+```
+
+## Special files and folders
+
+The Asset Manager uses special files and folders when processing an `assembly.json` file. These are:
+* `locale/localefile_??.json`: The locale files accessible through the `lang` and `langs` variables.
+* `template.html`: The single template file accessible through the `snippetsRaw` variable and the `getSnippets()` function.
+* `templates/files.html`: A template files accessible through the `templateList` object, the `getTemplate(key)` function and the `getTemplateStr(key)` function.
+
+### Locale files
+
+The locale folder is used to store language specific strings in a series of JSON files. These files must have specific
+names for Asset Manager to use them. The prefix of the filenames must match exactly, including case, of the name of
+the folder that holds the locale folder. In the example below the name of the folder is `MyItem` and the prefix of all
+of the filenames in the `locales` folder is also `MyItem`.
+
+```
+MyItem
+│
+├── assembly.json
+├── template
+│   │
+│   └── myFile.html
+│
+└── locale
+    │
+    ├── MyItem_en.json
+    ├── MyItem_fr.json
+    ├── MyItem_ja.json
+    └── MyItem_zh.json
+```
+Each file in the `locales` folder identifies which language it supports by appending an underscore and the two letter
+locale to the filename. So `_en` represents English, `_fr` represents French, etc. You MUST have the `_en` file in
+all cases or the locale system fails.
+
+When these locale strings are loaded into the system they are accessible through the `langs` object. `langs.en.OPEN`
+will access the value for `OPEN` from the `_en` file. While `langs.fr.OPEN` will access the value for `OPEN` from
+the `_fr` file.
+
+The locale system will automatically create a variable called `lang` which is the set of locale strings for the currently
+selected locale. The `lang` object is a combination of English strings overwritten by the strings for the requested
+locale. Since we create the English version of the strings first and then the other languages are translated later this
+allows the code to always have a string for every key. If it is translated we get the translated string. If it is not
+translated we get the English string.
+
+
+### Templates
+
+#### template.html
+
+The `template.html` function is a way of adding html templates into an assembly. The Asset Manager
+converts the content of the `template.html` file into a JavaScript string and save it as the variable `snippetsRaw`.
+If there is a `<body>` tag in the template then just the contents of the `<body>` tag is included in `snippetsRaw`.
+
+Your code can access `snippetsRaw` to get at the content of the template as a string. Or you can call the function
+`getSnippets()` to get the contents of the template back as DOM elements in a single `<div>` element. `getSnippets()`
+also translates the template before converting it to DOM elements. More on translation below.
+
+`template.html` allows you to exclude lines and sections. To exclude a line just add
+`<!-- exclude LINE -->` anywhere on that line. Asset Manager will remove the entire line.
+
+To exclude a section place `<!-- exclude START -->` on the first line to exclude and
+`<!-- exclude END -->` on the last line to excluded. Asset Manager will exclude everything from the
+first line to the last line, including everything on those lines.
+
+
+#### templates folder
+
+The `templates` folder is a way to provide multiple, independent, templates to your code. The templates folder
+works great for a series of AngularJS directives that each need their own template. It also works well for any
+code that needs to get at different templates without the need to dig into the DOM created by `getSnippets()`.
+
+Inside the `tempaltes` folder you can create one or more `.html` files and each of these become a separately
+accessible template. Each template file must use the `.html` extension and can only use alphanumeric characters
+in the filename.
+
+All of the templates from the `templates` folder are stored as member variables of the `templateList` variable.
+If you had the file `myStuff.html` then the contents of `myStuff.html` would be accessible as a string in the
+variable `templateList.myStuff`.
+
+Template files in the `templates` folder should only contain the code needed in the template. Unlike the file
+`template.html` files in the `templates` folder do not allow for excluded lines or section and these files do not
+attempt to only grab the contents of the `<body>` tag.
+
+You code can access the templates by using the member variable of the `templateList` variable. `templateList.button`
+would give you the content of the file `tempaltes/button.html` and `tempalteList.form` would give you the contents
+of the file `templates/form.html`.
+
+You can also get the translated content by calling the function `getTemplateStr(key)` where `key` would be a string
+of the filename. For example: `getTemplateStr("button")` would give you the contents of the file `templates/button.html`
+after that string had been translated. More on translations below.
+
+#### Template translations
+
+Templates can be auto-translated given the following conditions:
+
+* There are correctly formatted locale files in the locales folder.
+* The template, either `template.html` or files in the `templates` folder, use translations.
+
+For information about correctly formatted locale files see the section above on Locale Files.
+
+To use translations in a template you simple need to place the translation *key name* (translation key)
+in between curly braces like this: `{OPEN}`.
+
+If the translation key `OPEN` exists within the locale files then `{OPEN}` will be replaced by the value for
+`OPEN`. Below is an example translation file, template and the output you would get after the translation of the
+template:
+
+*Translation file:*
+```
+{
+  "LABEL_OPEN": "Open",
+  "LABEL_CLOSE": "Close",
+  "HELP": "This is a help string"
+}
+```
+
+*Template:*
+```html
+<button>{LABEL_OPEN}</button>
+<p>{HELP}</p>
+```
+
+*Output*
+```html
+<button>Open</button>
+<p>This is a help string</p>
+```
+
+##### Translation keys not found
+
+Be aware that any translation key that is not found in the locale files will be left alone:
+
+*Translation file:*
+```
+{
+  "LABEL_OPEN": "Open",
+  "LABEL_CLOSE": "Close",
+  "HELP": "This is a help string"
+}
+```
+
+*Template:*
+```html
+<button>{LABEL_OPEN}</button>
+<p>{HELP}</p>
+<p>{{angularVariable}}</p>
+```
+
+*Output*
+```html
+<button>Open</button>
+<p>This is a help string</p>
+<p>{{angularVariable}}</p>
+```
+
+##### Translation keys vs. AngularJS scope variables
+
+You must be careful to not use an AngularJS scope variable that is the same name as a translation key.
+Or it will be changed:
+
+*Translation file:*
+```
+{
+  "LABEL_OPEN": "Open",
+  "LABEL_CLOSE": "Close",
+  "HELP": "This is a help string",
+  "CLOSE": "Close this"
+}
+```
+
+*Template:*
+```html
+<button>{LABEL_OPEN}</button>
+<p>{HELP}</p>
+<p>{{CLOSE}}</p>
+```
+
+*Output*
+```html
+<button>Open</button>
+<p>This is a help string</p>
+<p>{Close this}</p>
+```
+
+You should either change the Angular scope variable name or the translation key to prevent this problem.
+Writing the translation key in all caps and the scope variables in CamelCase format should prevent this
+from happening.
+
