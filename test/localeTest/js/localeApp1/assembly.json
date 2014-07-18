@@ -1,0 +1,8 @@
+{
+  "files": [
+    "test.js"
+  ],
+  "localePath": "../locale1",
+  "localeFileName": "test1",
+  "simpleWrap": true
+}

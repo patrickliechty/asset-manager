@@ -1,0 +1,8 @@
+{
+  "files": [
+    "test.js"
+  ],
+  "localePath": "langs",
+  "templatePath": "html",
+  "simpleWrap": true
+}

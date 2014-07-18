@@ -137,7 +137,71 @@ describe("contentResolver tests", function(){
 
     it("for sub assembly without simpleWrap", function() {
       var js = this.cf("", "ModuleWithSubNoSimpleWrap", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: ModuleWithSubNoSimpleWrap\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n//Error building assembly 'test/app1/js/ModuleWithSubNoSimpleWrap/subModule/assembly.json': Error: Sub assemblies MUST have 'simpleWrap' set to true.\n\n");
+      var content = js.getContent().replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: ModuleWithSubNoSimpleWrap\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n\nconsole.error(\"Asset Manager build error:\\nFailed to build assembly 'subModule/assembly.json'. - Sub assemblies MUST have 'simpleWrap' set to true.\");\n\n".replace(/\n/g, "|");
+      assert.equal(content, shouldBe);
+    });
+
+    it("for missing sub assembly", function() {
+      var js = this.cf("", "ModuleWithMissingSubAssembly", "js", "js");
+      var content = js.getContent().replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: ModuleWithMissingSubAssembly\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n//Module sub-assembly: subModule\nconsole.error(\"Asset Manager build error:\\nSub-assembly 'subModule' was not found and could not be included.\");\n\n".replace(/\n/g, "|");
+      assert.equal(content, shouldBe);
+    });
+
+    it("for missing file", function() {
+      var js = this.cf("", "ModuleWithMissingFile", "js", "js");
+      var content = js.getContent().replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: ModuleWithMissingFile\n\n(function(window,undefined){\n/*\n * Included File: missingFile.js\n*/\n\nconsole.error(\"Asset Manager build error:\\nFile 'missingFile.js' was not found and could not be included.\");\n\n}(window));".replace(/\n/g, "|");
+      assert.equal(content, shouldBe);
+    });
+  });
+
+  describe("Test 'localePath, 'localeFileName', and 'templatePath' functionality", function() {
+    beforeEach(function() {
+      this.cf = this.cr(['test/localeTest'], null, false);
+    });
+
+    it("for 'localePath' and 'localeFileName' usage in localeApp1", function() {
+      var js = this.cf("", "localeApp1", "js", "js");
+      var content = js.getContent().replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: localeApp1||(function(window,undefined){|/*| * Included File: test.js| */||function id() {|  return \"localeTest/app1/test.js\";|}|||/*| * Included File: test1_en.json| */||var langs = {\"en\":{\"str1\":\"This is locale1/test1/string1\",\"str2\":\"This is locale1/test1/string2\"},\"ke\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"zz\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"fr\":{\"str1\":\"Cet est locale1/test1/string1\",\"str2\":\"Cet est locale1/test1/string2\"}};||/*| * Included File: Injected code| */||var locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend({}, langs['en'], l1);||}(window));";
+      assert.equal(content, shouldBe);
+    });
+
+    it("for 'localePath', 'localeFileName' and 'templatePath' usage in localeApp2", function() {
+      var js = this.cf("", "localeApp2", "js", "js");
+      var content = js.getContent().replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: localeApp2||(function(window,undefined){|/*| * Included File: test.js| */||function id() {|  return \"localeTest/app2/test.js\";|}|||/*| * Included File: test2_en.json| */||var langs = {\"en\":{\"str1\":\"This is locale1/test2/string1\",\"str2\":\"This is locale1/test2/string2\"},\"ke\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"zz\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"}};||/*| * Included File: Injected code| */||var locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend({}, langs['en'], l1);||  var templateList = {};||/*| * Included File: ../template1/cell.html| */||  templateList.cell = \"<span data-debug=\\\"template1/cell.html\\\"></span>\\n\";||/*| * Included File: ../template1/frame.html| */||  templateList.frame = \"<div class=\\\"frame\\\" data-debug=\\\"template1/frame.html\\\"></div>\\n\";||  function getTemplateStr(key) {|    return (templateList[key]||\"\").format(lang);|  }||  function getTemplate(key) {|    var snip = document.createElement(\"div\");|    $(snip).html(getTemplateStr(key));|    return snip;|  }|}(window));";
+      assert.equal(content, shouldBe);
+    });
+
+    it("for 'localePath', 'localeFileName' and 'templatePath' usage in localeApp3", function() {
+      var js = this.cf("", "localeApp3", "js", "js");
+      var content = js.getContent().replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: localeApp3||(function(window,undefined){|/*| * Included File: test.js| */||function id() {|  return \"localeTest/app3/test.js\";|}|||/*| * Included File: localeApp3_en.json| */||var langs = {\"en\":{\"str1\":\"This is localeApp3/langs/localeApp3/string1\",\"str2\":\"This is localeApp3/langs/localeApp3/string2\"},\"ke\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"zz\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"}};||/*| * Included File: Injected code| */||var locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend({}, langs['en'], l1);||  var templateList = {};||/*| * Included File: html/blah.html| */||  templateList.blah = \"<p>Blah!</p>\\n\";||/*| * Included File: html/yadda.html| */||  templateList.yadda = \"<h1>Yadda</h1>\\n\";||  function getTemplateStr(key) {|    return (templateList[key]||\"\").format(lang);|  }||  function getTemplate(key) {|    var snip = document.createElement(\"div\");|    $(snip).html(getTemplateStr(key));|    return snip;|  }|}(window));";
+      assert.equal(content, shouldBe);
+    });
+
+    it("for invalid 'localePath'", function() {
+      var js = this.cf("", "failLocalePathApp", "js", "js");
+      var content = "["+js.getContent().replace(/\n/g, "|")+"]";
+      var shouldBe = "[|console.error(\"Asset Manager build error:\\nFailed to build assembly 'failLocalePathApp/assembly.json'. - 'localePath' was defined as 'notReal' but the path does not exist.\");]";
+      assert.equal(content, shouldBe);
+    });
+
+    it("for invalid 'localeFileName'", function() {
+      var js = this.cf("", "failLocaleFileApp", "js", "js");
+      var content = "["+js.getContent().replace(/\n/g, "|")+"]";
+      var shouldBe = "[|console.error(\"Asset Manager build error:\\nFailed to build assembly 'failLocaleFileApp/assembly.json'. - 'localeFileName' was defined as 'test2' but the file 'locales/test2_en.json' does not exist.\");]";
+      assert.equal(content, shouldBe);
+    });
+
+    it("for invalid 'templatePath'", function() {
+      var js = this.cf("", "failTemplatePathApp", "js", "js");
+      var content = "["+js.getContent().replace(/\n/g, "|")+"]";
+      var shouldBe = "[|console.error(\"Asset Manager build error:\\nFailed to build assembly 'failTemplatePathApp/assembly.json'. - 'templatePath' was defined as 'notFound' but the path does not exist.\");]";
+      assert.equal(content, shouldBe);
     });
   });
 });

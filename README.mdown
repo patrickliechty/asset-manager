@@ -90,9 +90,13 @@ if the folder name was `widget` then the output file would be called `widget.js`
 an output file named `MyControl.js` (Notice the case of the filename.)
 
 There are three main sections of the assembly.json file:
+
 * `files` (array of files): The list of one or more files, normally JavaScript files, to combine into the output file.
 * `simpleWrap` (true/false): If true then wrap the output file in a Immediately-Invoked Function Expression (IIFE). This is a function closure that is wrapped around the code to prevent namespace leakage.
 * `assemblies` (array of folders): A list of one or more folders which contain an `assembly.json` file that is assembled into the output file.
+* `templatePath` (string): A relative path indicating where to load the template files. The default path is `./templates`.
+* `localePath` (string):  A relative path indicating where to load the locale files. The default path is `./locales`.
+* `localeFileName` (string): The name, minus `_en.json` of the file to load as the locale files. The default is the name of the folder containing the `assembly.json` file.
 
 ### files
 
@@ -173,18 +177,67 @@ componentFolder
         └── file.js
 ```
 
+### templatePath
+`templatePath` is a path, relative to the location of the `assembly.json` file, that indicates where to load the template files.
+The default value for `templatePath` is `./templates`.
+
+This feature can be used to allow multiple assemblies to use the same set of template files.
+
+### localePath
+`localePath` is a path, relative to the location of the `assembly.json` file, that indicates where to load the locale files.
+The default value for `localePath` is `./locales`.
+
+This feature allows multiple assemblies to share the same path for their locale files. (One thing to remember is that,
+unless you also provide the `localeFileName` parameter, your assembly will try to find the locale files that use the name
+of your assembly folder name. See `localeFileName` below for more information.)
+
+### localeFileName
+`localeFileName` is the name, minus `_en.json` of the file to load as the locale file.
+The default value for `localeFileName` is name of the folder containing the `assembly.json` file.
+Given the following folder structure the default value for `localefileName` would be `CoolThing`.
+This would load the files `CoolThing_en.json`, `CoolThing_es.json`, `CoolThing_fr.json`,
+`CoolThing_it.json` and `CoolThing_zh.json`.
+
+```
+CoolThing
+│
+├── assembly.json
+├── sub1
+│   │
+│   ├── assembly.json
+│   └── file.js
+│
+└── locales
+    │
+    ├── CoolThing_en.json
+    ├── CoolThing_es.json
+    ├── CoolThing_fr.json
+    ├── CoolThing_it.json
+    ├── CoolThing_zh.json
+    ├── otherFile_en.json
+    ├── otherFile_es.json
+    ├── otherFile_fr.json
+    ├── otherFile_it.json
+    └── otherFile_zh.json
+```
+
+If `localeFileName` were set to "otherFile" then Asset Manager would load the files `otherFile_en.json`,
+`otherFile_es.json`, `otherFile_fr.json`, `otherFile_it.json` and `otherFile_zh.json`.
+
+
 ## Special files and folders
 
 The Asset Manager uses special files and folders when processing an `assembly.json` file. These are:
-* `locale/localefile_??.json`: The locale files accessible through the `lang` and `langs` variables.
+
+* `locales/localefile_??.json`: The locale files accessible through the `lang` and `langs` variables.
 * `template.html`: The single template file accessible through the `snippetsRaw` variable and the `getSnippets()` function.
 * `templates/files.html`: A template files accessible through the `templateList` object, the `getTemplate(key)` function and the `getTemplateStr(key)` function.
 
-### Locale files
+### Locale files / `locales` folder
 
-The locale folder is used to store language specific strings in a series of JSON files. These files must have specific
+The locales folder is used to store language specific strings in a series of JSON files. These files must have specific
 names for Asset Manager to use them. The prefix of the filenames must match exactly, including case, of the name of
-the folder that holds the locale folder. In the example below the name of the folder is `MyItem` and the prefix of all
+the folder that holds the locales folder. In the example below the name of the folder is `MyItem` and the prefix of all
 of the filenames in the `locales` folder is also `MyItem`.
 
 ```
@@ -195,7 +248,7 @@ MyItem
 │   │
 │   └── myFile.html
 │
-└── locale
+└── locales
     │
     ├── MyItem_en.json
     ├── MyItem_fr.json
@@ -215,6 +268,13 @@ selected locale. The `lang` object is a combination of English strings overwritt
 locale. Since we create the English version of the strings first and then the other languages are translated later this
 allows the code to always have a string for every key. If it is translated we get the translated string. If it is not
 translated we get the English string.
+
+> **Using the `localePath` parameter in the assembly.json file you can change the location where Asset Manager loads the
+locale files from the `locales` folder to any other folder. The string value of the `localePath` parameter is a path
+relative to the location of the assembly.json file.**
+
+> **Using the `localeFileName` parameter in the assembly.json file you can change the files that Asset Manager loads as
+the locale files. For more information on this please see the section on `localeFileName` above.**
 
 
 ### Templates
@@ -237,7 +297,7 @@ To exclude a section place `<!-- exclude START -->` on the first line to exclude
 first line to the last line, including everything on those lines.
 
 
-#### templates folder
+#### `templates` folder
 
 The `templates` folder is a way to provide multiple, independent, templates to your code. The templates folder
 works great for a series of AngularJS directives that each need their own template. It also works well for any
@@ -263,11 +323,16 @@ You can also get the translated content by calling the function `getTemplateStr(
 of the filename. For example: `getTemplateStr("button")` would give you the contents of the file `templates/button.html`
 after that string had been translated. More on translations below.
 
+> **Using the `templatePath` parameter in the assembly.json file you can change the location where Asset Manager loads the
+template files from the `templates` folder to any other folder. The string value of the `templatePath` parameter is a path
+relative to the location of the assembly.json file.**
+
+
 #### Template translations
 
 Templates can be auto-translated given the following conditions:
 
-* There are correctly formatted locale files in the locales folder.
+* There are correctly formatted locale files in the `locales` folder.
 * The template, either `template.html` or files in the `templates` folder, use translations.
 
 For information about correctly formatted locale files see the section above on Locale Files.

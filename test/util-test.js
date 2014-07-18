@@ -164,7 +164,7 @@ describe("Utils tests", function(){
 
     it("should find all assets in multiple paths", function(done) {
       this.utils.getListOfAllFiles(["test/app3", "test/app1"])(function(err, files) {
-        expect(files).to.have.length(59);
+        expect(files).to.have.length(62);
         done();
       });
     });
@@ -182,7 +182,7 @@ describe("Utils tests", function(){
 
     it("should find folders with assembly.json files with more than one source path", function(done) {
       this.utils.getListOfFoldersWithAssemblyFiles(["test/app3", "test/app1"])(function(err, files) {
-        expect(files).to.have.length(13);
+        expect(files).to.have.length(15);
         done();
       });
     });

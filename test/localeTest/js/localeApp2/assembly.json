@@ -1,0 +1,9 @@
+{
+  "files": [
+    "test.js"
+  ],
+  "localePath": "../locale1",
+  "localeFileName": "test2",
+  "templatePath": "../template1",
+  "simpleWrap": true
+}
