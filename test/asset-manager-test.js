@@ -212,7 +212,7 @@ describe("Asset Manager", function() {
       });
 
       it("check Angular resolution", function(){
-        expect(this.context.js("angular/MyApp.js")).to.equal("<script src='/js/angular/MyApp-e7cf12e655c36919c4ff1d998e8c3f35.js'></script>");
+        expect(this.context.js("angular/MyApp.js")).to.equal("<script src='/js/angular/MyApp-0706901f2d108d3eb07f6b92a1f1e7f6.js'></script>");
         expect(this.context.html("template1.html")).to.equal("/html/template1-932e5a2fd42307d0daab17b456817ea0.html");
         expect(this.context.html("template2.html")).to.equal("/html/template2-8721335f90ef32d088028509bb92e344.html");
       });

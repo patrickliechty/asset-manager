@@ -76,31 +76,33 @@ describe("contentResolver tests", function(){
     it("for a simpleModule", function() {
       var js = this.cf("", "simpleModule", "js", "js");
       assert.equal(path.resolve("test/app2/js/simpleModule/assembly.json"), js.getDiskPath());
-      assert.equal("//Module assembly: simpleModule\n\n/*\n * Included File: main.js\n */\n\nvar m=\"main.js\";\n\n", js.getContent());
+      assert.equal("//Module assembly: simpleModule\n\n/*\n * Included File: main.js\n */\nvar m=\"main.js\";\n\n", js.getContent());
     });
 
     it("for a fullModule", function() {
       var js = this.cf("", "fullModule", "js", "js");
       assert.equal(path.resolve("test/app1/js/fullModule/assembly.json"), js.getDiskPath());
-      //assert.equal("//Module assembly: fullModule\n\n/*\n * Included File: helpers.js\n */\n\nvar h=\"helper.js\";\n\n/*\n * Included File: main.js\n */\n\nvar m=\"main.js\";\n\n/*\n * Included File: fullModule_en.json\n */\n\nvar langs = {\"en\":{\"title\":\"value\",\"onlyEN\":\"value\",\"full\":\"more\"});\"es\":{\"title\":\"espanol\"}};\n\n/*\n * Included File: Injected code\n */\n\nvar locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend(langs['en'], l1);\n\n/*\n * Included File: template.html\n */\n\n\nvar snippetsRaw = \"\\n\" + \n\"    html template body\\n\" + \n\"\\n\" + \n\"\";\n\n\nfunction getSnippets(){\nvar snip = document.createElement('div');\n$(snip).html(snippetsRaw.format(lang));\n\nreturn snip;\n}\n\n\n", js.getContent());
+      //assert.equal("//Module assembly: fullModule\n\n/*\n * Included File: helpers.js\n */\nvar h=\"helper.js\";\n\n/*\n * Included File: main.js\n */\nvar m=\"main.js\";\n\n/*\n * Included File: fullModule_en.json\n */\nvar langs = {\"en\":{\"title\":\"value\",\"onlyEN\":\"value\",\"full\":\"more\"});\"es\":{\"title\":\"espanol\"}};\n\n/*\n * Included File: Injected code\n */\nvar locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend(langs['en'], l1);\n\n/*\n * Included File: template.html\n */\nvar snippetsRaw = \"\\n\" + \n\"    html template body\\n\" + \n\"\\n\" + \n\"\";\n\n\nfunction getSnippets(){\nvar snip = document.createElement('div');\n$(snip).html(snippetsRaw.format(lang));\n\nreturn snip;\n}\n\n\n", js.getContent());
     });
 
     it("for a fullModuleWithCSS", function() {
       var js = this.cf("", "fullModuleWithCSS", "js", "js");
       assert.equal(path.resolve("test/app3/js/fullModuleWithCSS/assembly.json"), js.getDiskPath());
-      //assert.equal("//Module assembly: fullModuleWithCSS\n\n/*\n * Included File: helpers.js\n */\n\nvar h=\"helper.js\";\n\n/*\n * Included File: main.js\n */\n\nvar m=\"main.js\";\n\n/*\n * Included File: fullModuleWithCSS_en.json\n */\n\nvar langs = {\"en\":{\"title\":\"value\",\"onlyEN\":\"value\"});\"es\":{\"title\":\"espanol\"}};\n\n/*\n * Included File: Injected code\n */\n\nvar locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend(langs['en'], l1);\n\n/*\n * Included File: template.html\n */\n\n\nvar snippetsRaw = \"\\n\" + \n\"    html template body\\n\" + \n\"\\n\" + \n\"\";\n\n\nfunction getSnippets(){\nvar snip = document.createElement('div');\n$(snip).html(snippetsRaw.format(lang));\n\nreturn snip;\n}\n\n\n", js.getContent());
+      //assert.equal("//Module assembly: fullModuleWithCSS\n\n/*\n * Included File: helpers.js\n */\nvar h=\"helper.js\";\n\n/*\n * Included File: main.js\n */\nvar m=\"main.js\";\n\n/*\n * Included File: fullModuleWithCSS_en.json\n */\nvar langs = {\"en\":{\"title\":\"value\",\"onlyEN\":\"value\"});\"es\":{\"title\":\"espanol\"}};\n\n/*\n * Included File: Injected code\n */\nvar locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend(langs['en'], l1);\n\n/*\n * Included File: template.html\n */\nvar snippetsRaw = \"\\n\" + \n\"    html template body\\n\" + \n\"\\n\" + \n\"\";\n\n\nfunction getSnippets(){\nvar snip = document.createElement('div');\n$(snip).html(snippetsRaw.format(lang));\n\nreturn snip;\n}\n\n\n", js.getContent());
     });
 
     it("with template folder", function() {
       var js = this.cf("", "templateModule", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: templateModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='main.js';\n\n\n  var templateList = {};\n\n/*\n * Included File: templates/one.html\n */\n\n  templateList.one = \"<b>one</b>\\n\";\n\n/*\n * Included File: templates/two.html\n */\n\n  templateList.two = \"<i>two</i>\\n\";\n\n  function getTemplateStr(key) {\n    return templateList[key]||\"\";\n  }\n\n  function getTemplate(key) {\n    var snip = document.createElement(\"div\");\n    $(snip).html(getTemplateStr(key));\n    return snip;\n  }\n}(window));");
+      var content = js.getContent();//.replace(/\n/g,"|").replace(/ /g,"+");
+      var shouldBe = "//Module assembly: templateModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='main.js';\n\n\nvar templateList = {};\n\n/*\n * Included File: templates/one.html\n */\ntemplateList.one = \"<b>one</b>\\n\";\n\n/*\n * Included File: templates/two.html\n */\ntemplateList.two = \"<i>two</i>\\n\";\n\nfunction getTemplateStr(key) {\n  return templateList[key]||\"\";\n}\n\nfunction getTemplate(key) {\n    var snip = document.createElement(\"div\");\n  $(snip).html(getTemplateStr(key));\n  return snip;\n}\n}(window));";//.replace(/\n/g,"|").replace(/ /g,"+");
+      assert.equal(content, shouldBe);
 
     });
 
     it("for a Module with spread out parts (Uses Asset Resolution Paths)", function() {
       var js = this.cf("", "testModule", "js", "js");
       assert.equal(path.resolve("test/app4/assets/js/testModule/assembly.json"), js.getDiskPath());
-      assert.equal("//Module assembly: testModule\n\n/*\n * Included File: main.js\n */\n\nvar m=\"main.js\";\n\n/*\n * Included File: shared-ui-assets.js\n */\n\nvar suia=\"suia.js\";\n\n/*\n * Included File: shared-ui-vendors.js\n */\n\nvar suiv=\"suiv.js\";\n\n", js.getContent());
+      assert.equal("//Module assembly: testModule\n\n/*\n * Included File: main.js\n */\nvar m=\"main.js\";\n\n/*\n * Included File: shared-ui-assets.js\n */\nvar suia=\"suia.js\";\n\n/*\n * Included File: shared-ui-vendors.js\n */\nvar suiv=\"suiv.js\";\n\n", js.getContent());
     });
   });
 
@@ -111,41 +113,41 @@ describe("contentResolver tests", function(){
 
     it("for simpleWrap", function() {
       var js = this.cf("", "wrapModule", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: wrapModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nalert('test');\n\n}(window));");
+      assert.equal(js.getContent(), "//Module assembly: wrapModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nalert('test');\n\n}(window));");
     });
 
     it("for complex wrap", function() {
       var js = this.cf("", "complexWrapModule", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: complexWrapModule\n\n(function(window,$,undefined){\n\n/*\n * Included File: main.js\n */\n\nalert('test');\n\n}(this,jQuery));");
+      assert.equal(js.getContent(), "//Module assembly: complexWrapModule\n\n(function(window,$,undefined){\n\n/*\n * Included File: main.js\n */\nalert('test');\n\n}(this,jQuery));");
     });
 
     it("for sub assembly", function() {
       var js = this.cf("", "ModuleWithSub", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: ModuleWithSub\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n//Module sub-assembly: subModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='subMain.js';\n\n\n}(window));\n\n");
+      assert.equal(js.getContent(), "//Module assembly: ModuleWithSub\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='topMain.js';\n\n\n}(window));\n\n//Module sub-assembly: subModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='subMain.js';\n\n\n}(window));\n\n");
     });
 
     it("for just a sub assembly", function() {
       var js = this.cf("", "ModuleWithSub/subModule", "js", "js");
-      assert.equal(js.getContent(), "//Module assembly: subModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='subMain.js';\n\n\n}(window));");
+      assert.equal(js.getContent(), "//Module assembly: subModule\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='subMain.js';\n\n\n}(window));");
     });
 
     it("for two sub assemblies", function() {
       var js = this.cf("", "ModuleWith2Subs", "js", "js");
       var out = js.getContent();
-      assert.equal(out, "//Module assembly: ModuleWith2Subs\n\n// No files in this assembly.\n\n//Module sub-assembly: subModule1\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='subMain1.js';\n\n\n}(window));\n\n\n\n//Module sub-assembly: subModule2\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='subMain2.js';\n\n\n}(window));\n\n");
+      assert.equal(out, "//Module assembly: ModuleWith2Subs\n\n// No files in this assembly.\n\n//Module sub-assembly: subModule1\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='subMain1.js';\n\n\n}(window));\n\n\n\n//Module sub-assembly: subModule2\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='subMain2.js';\n\n\n}(window));\n\n");
     });
 
     it("for sub assembly without simpleWrap", function() {
       var js = this.cf("", "ModuleWithSubNoSimpleWrap", "js", "js");
       var content = js.getContent().replace(/\n/g, "|");
-      var shouldBe = "//Module assembly: ModuleWithSubNoSimpleWrap\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n\nconsole.error(\"Asset Manager build error:\\nFailed to build assembly 'subModule/assembly.json'. - Sub assemblies MUST have 'simpleWrap' set to true.\");\n\n".replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: ModuleWithSubNoSimpleWrap\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='topMain.js';\n\n\n}(window));\n\n\nconsole.error(\"Asset Manager build error:\\nFailed to build assembly 'subModule/assembly.json'. - Sub assemblies MUST have 'simpleWrap' set to true.\");\n\n".replace(/\n/g, "|");
       assert.equal(content, shouldBe);
     });
 
     it("for missing sub assembly", function() {
       var js = this.cf("", "ModuleWithMissingSubAssembly", "js", "js");
       var content = js.getContent().replace(/\n/g, "|");
-      var shouldBe = "//Module assembly: ModuleWithMissingSubAssembly\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\n\nvar file='topMain.js';\n\n\n}(window));\n\n//Module sub-assembly: subModule\nconsole.error(\"Asset Manager build error:\\nSub-assembly 'subModule' was not found and could not be included.\");\n\n".replace(/\n/g, "|");
+      var shouldBe = "//Module assembly: ModuleWithMissingSubAssembly\n\n(function(window,undefined){\n/*\n * Included File: main.js\n */\nvar file='topMain.js';\n\n\n}(window));\n\n//Module sub-assembly: subModule\nconsole.error(\"Asset Manager build error:\\nSub-assembly 'subModule' was not found and could not be included.\");\n\n".replace(/\n/g, "|");
       assert.equal(content, shouldBe);
     });
 
@@ -165,21 +167,21 @@ describe("contentResolver tests", function(){
     it("for 'localePath' and 'localeFileName' usage in localeApp1", function() {
       var js = this.cf("", "localeApp1", "js", "js");
       var content = js.getContent().replace(/\n/g, "|");
-      var shouldBe = "//Module assembly: localeApp1||(function(window,undefined){|/*| * Included File: test.js| */||function id() {|  return \"localeTest/app1/test.js\";|}|||/*| * Included File: test1_en.json| */||var langs = {\"en\":{\"str1\":\"This is locale1/test1/string1\",\"str2\":\"This is locale1/test1/string2\"},\"ke\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"zz\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"fr\":{\"str1\":\"Cet est locale1/test1/string1\",\"str2\":\"Cet est locale1/test1/string2\"}};||/*| * Included File: Injected code| */||var locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend({}, langs['en'], l1);||}(window));";
+      var shouldBe = "//Module assembly: localeApp1||(function(window,undefined){|/*| * Included File: test.js| */|function id() {|  return \"localeTest/app1/test.js\";|}|||var langs = {|  // Included locale file: test1_en.json|  \"en\": {\"str1\":\"This is locale1/test1/string1\",\"str2\":\"This is locale1/test1/string2\"},|  // Included locale file: test1_fr.json|  \"fr\": {\"str1\":\"Cet est locale1/test1/string1\",\"str2\":\"Cet est locale1/test1/string2\"},|  // Included locale file: Injected code|  \"ke\": {\"str1\":\"[str1]\",\"str2\":\"[str2]\"}|};|langs.zz = langs.ke || {};|var locale = FS.locale || window.locale || 'en';|locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];|var l1 = langs[locale] || langs['en'];|var lang = $.extend({}, langs['en'], l1);||}(window));";
       assert.equal(content, shouldBe);
     });
 
     it("for 'localePath', 'localeFileName' and 'templatePath' usage in localeApp2", function() {
       var js = this.cf("", "localeApp2", "js", "js");
       var content = js.getContent().replace(/\n/g, "|");
-      var shouldBe = "//Module assembly: localeApp2||(function(window,undefined){|/*| * Included File: test.js| */||function id() {|  return \"localeTest/app2/test.js\";|}|||/*| * Included File: test2_en.json| */||var langs = {\"en\":{\"str1\":\"This is locale1/test2/string1\",\"str2\":\"This is locale1/test2/string2\"},\"ke\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"zz\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"}};||/*| * Included File: Injected code| */||var locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend({}, langs['en'], l1);||  var templateList = {};||/*| * Included File: ../template1/cell.html| */||  templateList.cell = \"<span data-debug=\\\"template1/cell.html\\\"></span>\\n\";||/*| * Included File: ../template1/frame.html| */||  templateList.frame = \"<div class=\\\"frame\\\" data-debug=\\\"template1/frame.html\\\"></div>\\n\";||  function getTemplateStr(key) {|    return (templateList[key]||\"\").format(lang);|  }||  function getTemplate(key) {|    var snip = document.createElement(\"div\");|    $(snip).html(getTemplateStr(key));|    return snip;|  }|}(window));";
+      var shouldBe = "//Module assembly: localeApp2||(function(window,undefined){|/*| * Included File: test.js| */|function id() {|  return \"localeTest/app2/test.js\";|}|||var langs = {|  // Included locale file: test2_en.json|  \"en\": {\"str1\":\"This is locale1/test2/string1\",\"str2\":\"This is locale1/test2/string2\"},|  // Included locale file: Injected code|  \"ke\": {\"str1\":\"[str1]\",\"str2\":\"[str2]\"}|};|langs.zz = langs.ke || {};|var locale = FS.locale || window.locale || 'en';|locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];|var l1 = langs[locale] || langs['en'];|var lang = $.extend({}, langs['en'], l1);||var templateList = {};||/*| * Included File: ../template1/cell.html| */|templateList.cell = \"<span data-debug=\\\"template1/cell.html\\\"></span>\\n\";||/*| * Included File: ../template1/frame.html| */|templateList.frame = \"<div class=\\\"frame\\\" data-debug=\\\"template1/frame.html\\\"></div>\\n\";||function getTemplateStr(key) {|  return (templateList[key]||\"\").format(lang);|}||function getTemplate(key) {|    var snip = document.createElement(\"div\");|  $(snip).html(getTemplateStr(key));|  return snip;|}|}(window));";
       assert.equal(content, shouldBe);
     });
 
     it("for 'localePath', 'localeFileName' and 'templatePath' usage in localeApp3", function() {
       var js = this.cf("", "localeApp3", "js", "js");
       var content = js.getContent().replace(/\n/g, "|");
-      var shouldBe = "//Module assembly: localeApp3||(function(window,undefined){|/*| * Included File: test.js| */||function id() {|  return \"localeTest/app3/test.js\";|}|||/*| * Included File: localeApp3_en.json| */||var langs = {\"en\":{\"str1\":\"This is localeApp3/langs/localeApp3/string1\",\"str2\":\"This is localeApp3/langs/localeApp3/string2\"},\"ke\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"},\"zz\":{\"str1\":\"[str1]\",\"str2\":\"[str2]\"}};||/*| * Included File: Injected code| */||var locale = FS.locale || window.locale || 'en';locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];var l1 = langs[locale] || langs['en'];var lang = $.extend({}, langs['en'], l1);||  var templateList = {};||/*| * Included File: html/blah.html| */||  templateList.blah = \"<p>Blah!</p>\\n\";||/*| * Included File: html/yadda.html| */||  templateList.yadda = \"<h1>Yadda</h1>\\n\";||  function getTemplateStr(key) {|    return (templateList[key]||\"\").format(lang);|  }||  function getTemplate(key) {|    var snip = document.createElement(\"div\");|    $(snip).html(getTemplateStr(key));|    return snip;|  }|}(window));";
+      var shouldBe = "//Module assembly: localeApp3||(function(window,undefined){|/*| * Included File: test.js| */|function id() {|  return \"localeTest/app3/test.js\";|}|||var langs = {|  // Included locale file: localeApp3_en.json|  \"en\": {\"str1\":\"This is localeApp3/langs/localeApp3/string1\",\"str2\":\"This is localeApp3/langs/localeApp3/string2\"},|  // Included locale file: Injected code|  \"ke\": {\"str1\":\"[str1]\",\"str2\":\"[str2]\"}|};|langs.zz = langs.ke || {};|var locale = FS.locale || window.locale || 'en';|locale = typeof(locale) == 'string' ? locale : locale[0].split('-')[0];|var l1 = langs[locale] || langs['en'];|var lang = $.extend({}, langs['en'], l1);||var templateList = {};||/*| * Included File: html/blah.html| */|templateList.blah = \"<p>Blah!</p>\\n\";||/*| * Included File: html/yadda.html| */|templateList.yadda = \"<h1>Yadda</h1>\\n\";||function getTemplateStr(key) {|  return (templateList[key]||\"\").format(lang);|}||function getTemplate(key) {|    var snip = document.createElement(\"div\");|  $(snip).html(getTemplateStr(key));|  return snip;|}|}(window));";
       assert.equal(content, shouldBe);
     });
 
